@@ -1,0 +1,82 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Transform": "AWS::Serverless-2016-10-31",
+  "Description": "An AWS Serverless Application.",
+  "Resources": {
+    "GetProductBySku": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "Handler": "MultipleLambdas::MultipleLambdas.GetProductBySkuFunction::FunctionHandler",
+        "Runtime": "dotnetcore3.1",
+        "CodeUri": "",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": null,
+        "Policies": [
+          "AWSLambdaBasicExecutionRole"
+        ],
+        "Events": {
+          "RootGet": {
+            "Type": "Api",
+            "Properties": {
+              "Path": "/multi/GetProductBySku",
+              "Method": "POST"
+            }
+          }
+        }
+      }
+    },
+    "GetProducts" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "Handler": "MultipleLambdas::MultipleLambdas.GetProductsFunction::FunctionHandler",
+        "Runtime": "dotnetcore3.1",
+        "CodeUri": "",
+        "Description": "GetProducts function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": null,
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Events": {
+          "ProxyResource": {
+            "Type": "Api",
+            "Properties": {
+              "Path": "/multi/Products",
+              "Method": "GET"
+            }
+          }
+        }
+      }
+    },
+    "SetProductPrice" : {
+      "Type" : "AWS::Serverless::Function",
+      "Properties": {
+        "Handler": "MultipleLambdas::MultipleLambdas.SetProductPriceFunction::FunctionHandler",
+        "Runtime": "dotnetcore3.1",
+        "CodeUri": "",
+        "Description": "SetProductPrice function",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": null,
+        "Policies": [ "AWSLambda_FullAccess" ],
+        "Events": {
+          "ProxyResource": {
+            "Type": "Api",
+            "Properties": {
+              "Path": "/multi/Products/Price",
+              "Method": "Post, Put"
+            }
+          }
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "ApiURL": {
+      "Description": "API endpoint URL for Prod environment",
+      "Value": {
+        "Fn::Sub": "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+      }
+    }
+  }
+}
